@@ -151,6 +151,23 @@ let state = {
 
     state.currentPage = pageId;
 
+    // Tutup menu sidebar mobile secara otomatis setelah navigasi
+    const mobSidebar = document.getElementById('sidebar');
+    const mobOverlay = document.getElementById('mobile-overlay');
+    if (mobSidebar && !mobSidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+      mobSidebar.classList.add('-translate-x-full');
+      if (mobOverlay) mobOverlay.classList.add('hidden');
+    }
+
+    // Update active state Mobile Bottom Navigation Bar
+    document.querySelectorAll('.mob-bottom-btn').forEach(btn => {
+      btn.className = 'mob-bottom-btn flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 font-medium text-[10px] transition active:scale-95 cursor-pointer';
+    });
+    const mobActive = document.getElementById('mob-nav-' + pageId);
+    if (mobActive) {
+      mobActive.className = 'mob-bottom-btn flex flex-col items-center justify-center py-1 px-3 rounded-xl text-blue-600 dark:text-blue-400 font-bold text-[10px] transition active:scale-95 cursor-pointer';
+    }
+
     document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
     const targetPage = document.getElementById('page-' + pageId);
     if (targetPage) targetPage.classList.remove('hidden');

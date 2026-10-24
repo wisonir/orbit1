@@ -26,6 +26,32 @@ html, body {
     #app-workspace {
       height: 100% !important;
       height: 100dvh !important;
+      max-height: 100dvh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+
+    #app-workspace > main {
+      height: auto !important;
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    #page-dashboard {
+      padding-bottom: calc(6rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .chat-dashboard-card {
+      height: 380px !important;
+      min-height: 340px !important;
+    }
+
+    .schedule-dashboard-card {
+      height: auto !important;
+      min-height: 240px !important;
     }
   }
 

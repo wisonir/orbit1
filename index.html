@@ -466,7 +466,7 @@
 
     <div id="mobile-overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-slate-900/30 backdrop-blur-sm z-30 hidden md:hidden"></div>
 
-    <main class="flex-1 w-full min-w-0 flex flex-col h-screen overflow-y-auto chat-scroll bg-[#F4F7FB]">
+    <main class="flex-1 min-h-0 w-full flex flex-col overflow-y-auto chat-scroll bg-[#F4F7FB] dark:bg-[#0B1329]">
       
       <!-- GLOBAL ANNOUNCEMENT BANNER -->
       <div id="global-announcement-bar" class="hidden px-3.5 py-2.5 transition-all duration-300 z-30 shrink-0 select-none">
@@ -528,7 +528,7 @@
       </header>
 
       <!-- ================= HALAMAN 1: RINGKASAN ================= -->
-      <section id="page-dashboard" class="page-view p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl w-full mx-auto">
+      <section id="page-dashboard" class="page-view p-3 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl w-full mx-auto pb-24 md:pb-8">
         <!-- Hero Greeting -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -598,7 +598,7 @@
         <!-- Layout Grid: Chat AI & Jadwal Berdampingan -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           <!-- Chat AI di Ringkasan (7 Kolom) -->
-          <div class="lg:col-span-7 flex flex-col bg-white dark:bg-[#111C44] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden h-[540px]">
+          <div class="chat-dashboard-card lg:col-span-7 flex flex-col bg-white dark:bg-[#111C44] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm overflow-hidden h-[380px] sm:h-[460px] lg:h-[540px]">
             <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-white dark:bg-[#111C44] shrink-0">
               <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
@@ -767,7 +767,7 @@
           </div>
 
           <!-- Jadwal di Ringkasan (5 Kolom) -->
-          <div class="lg:col-span-5 bg-white dark:bg-[#111C44] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-5 h-[540px] flex flex-col overflow-hidden">
+          <div class="schedule-dashboard-card lg:col-span-5 bg-white dark:bg-[#111C44] rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-4 sm:p-5 h-auto min-h-[260px] lg:h-[540px] flex flex-col overflow-hidden">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 shrink-0">
               <div class="flex items-center gap-2">
                 <i data-lucide="calendar" class="w-4 h-4 text-blue-600"></i>
@@ -1961,6 +1961,48 @@
         </div>
       </section>
     </main>
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav id="mobile-bottom-nav" class="md:hidden shrink-0 bg-white/95 dark:bg-[#111C44]/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 px-3 py-1.5 flex items-center justify-around z-30 select-none">
+      <button 
+        type="button" 
+        onclick="navigateToPage('dashboard')" 
+        id="mob-nav-dashboard" 
+        class="mob-bottom-btn flex flex-col items-center justify-center py-1 px-3 rounded-xl text-blue-600 dark:text-blue-400 font-bold text-[10px] transition active:scale-95 cursor-pointer"
+      >
+        <i data-lucide="layout-grid" class="w-5 h-5 mb-0.5"></i>
+        <span>Ringkasan</span>
+      </button>
+
+      <button 
+        type="button" 
+        onclick="navigateToPage('chat')" 
+        id="mob-nav-chat" 
+        class="mob-bottom-btn flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 font-medium text-[10px] transition active:scale-95 cursor-pointer"
+      >
+        <i data-lucide="message-square" class="w-5 h-5 mb-0.5"></i>
+        <span>Chat AI</span>
+      </button>
+
+      <button 
+        type="button" 
+        onclick="navigateToPage('schedule')" 
+        id="mob-nav-schedule" 
+        class="mob-bottom-btn flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 font-medium text-[10px] transition active:scale-95 cursor-pointer"
+      >
+        <i data-lucide="calendar" class="w-5 h-5 mb-0.5"></i>
+        <span>Jadwal</span>
+      </button>
+
+      <button 
+        type="button" 
+        onclick="openProfileModal()" 
+        id="mob-nav-profile" 
+        class="mob-bottom-btn flex flex-col items-center justify-center py-1 px-3 rounded-xl text-slate-500 dark:text-slate-400 font-medium text-[10px] transition active:scale-95 cursor-pointer"
+      >
+        <i data-lucide="user" class="w-5 h-5 mb-0.5"></i>
+        <span>Profil</span>
+      </button>
+    </nav>
   </div>
 
   <!-- MODAL BERI PERINGATAN KE AKUN SISWA -->
