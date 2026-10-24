@@ -617,3 +617,49 @@ html, body {
     grid-column: span 12 / span 12 !important;
     height: 100% !important;
   }
+
+  /* ==================== PERBAIKAN TOTAL TAMPILAN MOBILE ==================== */
+  @media (max-width: 768px) {
+    html, body {
+      height: 100% !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+
+    #app-workspace {
+      height: auto !important;
+      min-height: 100% !important;
+      min-height: 100dvh !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: visible !important;
+    }
+
+    #app-workspace > main {
+      height: auto !important;
+      flex: 1 0 auto !important;
+      min-height: 100% !important;
+      overflow-y: visible !important;
+      -webkit-overflow-scrolling: touch !important;
+      padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    #page-dashboard {
+      padding-bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    #mobile-bottom-nav {
+      padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px)) !important;
+    }
+
+    .chat-dashboard-card {
+      height: 440px !important;
+      min-height: 400px !important;
+    }
+
+    .schedule-dashboard-card {
+      height: auto !important;
+      min-height: 260px !important;
+    }
+  }

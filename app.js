@@ -1816,17 +1816,28 @@ let state = {
   let isRecordingVoice = false;
   let activeMicTarget = 'full'; // 'full' atau 'dashboard'
 
+  const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  const isIOSChrome = isIOS && /CriOS/i.test(navigator.userAgent);
+
   function initSpeechRecognition() {
+    // Peringatan khusus untuk pengguna Chrome di iOS (iPhone/iPad)
+    if (isIOSChrome) {
+      showAppAlert('Gunakan Safari di iPhone', 'Apple membatasi akses Speech Recognition pada browser pihak ketiga di iOS. Harap buka web ini menggunakan Safari untuk menggunakan mikrofon.', 'warning');
+      return null;
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      showAppAlert('Browser Tidak Mendukung', 'Browser Anda belum mendukung fitur Web Speech API. Silakan gunakan Google Chrome, Microsoft Edge, atau Safari terbaru.', 'warning');
+      showAppAlert('Browser Tidak Mendukung', 'Browser Anda belum mendukung Web Speech API. Silakan gunakan Safari (di iPhone) atau Google Chrome resmi.', 'warning');
       return null;
     }
 
     const recognizer = new SpeechRecognition();
-    recognizer.lang = 'id-ID'; // Mengatur bahasa utama ke Bahasa Indonesia
-    recognizer.continuous = true; // Tetap merekam sampai tombol dimatikan
-    recognizer.interimResults = true; // Menampilkan hasil transkripsi secara instan saat berbicara
+    recognizer.lang = 'id-ID';
+    // Di mobile, continuous true sering menyebabkan crash/berhenti mendadak di Chrome Android
+    recognizer.continuous = !isMobileDevice;
+    recognizer.interimResults = true;
 
     recognizer.onstart = function() {
       isRecordingVoice = true;
@@ -1850,11 +1861,9 @@ let state = {
       const inputEl = document.getElementById(inputId);
       if (inputEl) {
         if (finalTranscript) {
-          // Tambahkan teks ke input yang sudah ada
           inputEl.value = (inputEl.value + ' ' + finalTranscript).trim();
           autoResizeChatInput(inputEl);
         } else if (interimTranscript) {
-          // Menampilkan teks sementara yang sedang diucapkan
           inputEl.placeholder = 'Mendengarkan: ' + interimTranscript + '...';
         }
       }
@@ -1862,30 +1871,56 @@ let state = {
 
     recognizer.onerror = function(event) {
       console.warn('Speech recognition error:', event.error);
-      stopSpeechRecognition();
       if (event.error === 'not-allowed') {
-        showAppAlert('Izin Mikrofon Ditolak', 'Harap izinkan akses mikrofon pada peramban Anda untuk menggunakan fitur ini.', 'error');
+        showAppAlert('Izin Mikrofon Ditolak', 'Harap berikan izin akses mikrofon pada peramban Anda untuk menggunakan fitur ini.', 'error');
+        stopSpeechRecognition();
+      } else if (event.error === 'no-speech') {
+        // Jangan hentikan paksa jika hanya hening sejenak
+      } else {
+        stopSpeechRecognition();
       }
     };
 
     recognizer.onend = function() {
+      // Jika di mobile dan user masih dalam mode merekam, otomatis sambung sesi kembali
+      if (isMobileDevice && isRecordingVoice) {
+        try {
+          recognizer.start();
+          return;
+        } catch (err) {}
+      }
       stopSpeechRecognition();
     };
 
     return recognizer;
   }
 
-  function toggleSpeechRecognition(target) {
+  async function toggleSpeechRecognition(target) {
     activeMicTarget = target;
 
     if (isRecordingVoice) {
       stopSpeechRecognition();
     } else {
-      startSpeechRecognition();
+      await startSpeechRecognition();
     }
   }
 
-  function startSpeechRecognition() {
+  async function startSpeechRecognition() {
+    // 1. Pancing izin mikrofon native browser terlebih dahulu (terutama di Chrome Mobile)
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        const testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Segera hentikan track setelah izin diperoleh
+        testStream.getTracks().forEach(t => t.stop());
+      } catch (micErr) {
+        console.warn('Izin hardware mic belum diberikan:', micErr);
+        if (micErr.name === 'NotAllowedError' || micErr.name === 'PermissionDeniedError') {
+          showAppAlert('Izin Mikrofon Dibutuhkan', 'Ketuk ikon gembok / pengaturan di address bar browser Anda lalu izinkan akses Mikrofon.', 'warning');
+          return;
+        }
+      }
+    }
+
     if (!recognitionInstance) {
       recognitionInstance = initSpeechRecognition();
     }
@@ -1894,9 +1929,12 @@ let state = {
     try {
       recognitionInstance.start();
     } catch (e) {
-      // Jika instance sudah berjalan
-      recognitionInstance.stop();
-      setTimeout(() => recognitionInstance.start(), 150);
+      try {
+        recognitionInstance.stop();
+      } catch (stopErr) {}
+      setTimeout(() => {
+        try { recognitionInstance.start(); } catch (startErr) {}
+      }, 200);
     }
   }
 
